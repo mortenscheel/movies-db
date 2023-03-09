@@ -31,7 +31,7 @@ return new class extends Migration
         });
         Schema::create('genres', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->index();
             $table->timestamps();
         });
         Schema::create('genre_movie', function (Blueprint $table) {
@@ -41,13 +41,37 @@ return new class extends Migration
         });
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->index();
             $table->timestamps();
         });
         Schema::create('company_movie', function (Blueprint $table) {
             $table->foreignId('company_id');
             $table->foreignId('movie_id');
             $table->primary(['company_id', 'movie_id']);
+        });
+        Schema::create('keywords', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->index();
+            $table->timestamps();
+        });
+        Schema::create('keyword_movie', function (Blueprint $table) {
+            $table->foreignId('keyword_id');
+            $table->foreignId('movie_id');
+            $table->primary(['keyword_id', 'movie_id']);
+        });
+        Schema::create('people', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('profile')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('movie_person', function (Blueprint $table) {
+            $table->foreignId('movie_id');
+            $table->foreignId('person_id');
+            $table->string('job');
+            $table->text('character')->nullable();
+            $table->unsignedTinyInteger('order')->nullable();
+            $table->primary(['movie_id', 'person_id']);
         });
     }
 
@@ -56,6 +80,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('movie_person');
+        Schema::dropIfExists('people');
+        Schema::dropIfExists('keyword_movie');
+        Schema::dropIfExists('keywords');
         Schema::dropIfExists('company_movie');
         Schema::dropIfExists('companies');
         Schema::dropIfExists('genre_movie');

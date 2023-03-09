@@ -26,4 +26,32 @@ class Movie extends Model
     {
         return $this->belongsToMany(Company::class);
     }
+
+    public function keywords(): BelongsToMany
+    {
+        return $this->belongsToMany(Keyword::class);
+    }
+
+    public function cast(): BelongsToMany
+    {
+        return $this->belongsToMany(Person::class)->withPivot([
+            'job',
+            'character',
+            'order',
+        ])->using(Credit::class)->where('job', 'Actor');
+    }
+
+    public function crew(): BelongsToMany
+    {
+        return $this->belongsToMany(Person::class)->withPivot(['job'])->using(Credit::class)->where('job', '!=', 'Actor');
+    }
+
+    public function people(): BelongsToMany
+    {
+        return $this->belongsToMany(Person::class)->withPivot([
+            'job',
+            'character',
+            'order',
+        ])->using(Credit::class);
+    }
 }

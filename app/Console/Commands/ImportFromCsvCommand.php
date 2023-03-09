@@ -1,14 +1,14 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 namespace App\Console\Commands;
 
-use App\Models\Company;
-use App\Models\Genre;
 use Arr;
 use DB;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 use League\Csv\Reader;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class ImportFromCsvCommand extends Command
 {
@@ -28,31 +28,129 @@ class ImportFromCsvCommand extends Command
 
     private array $buffers = [
         'movies' => [],
+        'genres' => [],
         'genre_movie' => [],
+        'companies' => [],
         'company_movie' => [],
+        'keywords' => [],
+        'keyword_movie' => [],
+        'people' => [],
+        'movie_person' => [],
     ];
 
-    /**
-     * Execute the console command.
-     *
-     * @throws \JsonException
-     */
+    private int $inserted = 0;
+
+    private string $message = '0';
+
     public function handle(): void
     {
-        $tables = [
-            'movies',
-            'genres',
-            'companies',
-            'genre_movie',
-            'company_movie',
-        ];
-        foreach ($tables as $table) {
+        foreach (array_keys($this->buffers) as $table) {
             DB::table($table)->truncate();
         }
         $this->importMetadata();
+        $this->importKeywords();
+        $this->importPeople();
     }
 
-    /** @noinspection PhpUnhandledExceptionInspection */
+    private function importPeople(): void
+    {
+        $this->info('Importing people');
+        $reader = Reader::createFromPath(storage_path('app/csv/credits.csv'));
+        $reader->setHeaderOffset(0);
+        $people = collect();
+        $progress = $this->getProgressBar($reader->count());
+        try {
+            foreach ($reader->getRecords() as $record) {
+                $progress->setMessage($this->message);
+                $progress->advance();
+                $movie_id = Arr::get($record, 'id');
+                foreach ($this->fixAndDecodeJson(Arr::get($record, 'cast')) as $cast) {
+                    $person_id = Arr::get($cast, 'id');
+                    if (! $people->has($person_id)) {
+                        $this->buffers['people'][] = [
+                            'id' => $person_id,
+                            'name' => Arr::get($cast, 'name'),
+                            'profile' => Arr::get($cast, 'profile_path'),
+                            'created_at' => now()->toDateTimeString(),
+                            'updated_at' => now()->toDateTimeString(),
+                        ];
+                        $people->put($person_id, true);
+                    }
+                    $this->buffers['movie_person'][] = [
+                        'movie_id' => $movie_id,
+                        'person_id' => $person_id,
+                        'job' => 'Actor',
+                        'character' => Arr::get($cast, 'character'),
+                        'order' => Arr::get($cast, 'order'),
+                    ];
+                }
+                foreach ($this->fixAndDecodeJson(Arr::get($record, 'crew')) as $crew) {
+                    $person_id = Arr::get($crew, 'id');
+                    if (! $people->has($person_id)) {
+                        $this->buffers['people'][] = [
+                            'id' => $person_id,
+                            'name' => Arr::get($crew, 'name'),
+                            'profile' => Arr::get($crew, 'profile_path'),
+                            'created_at' => now()->toDateTimeString(),
+                            'updated_at' => now()->toDateTimeString(),
+                        ];
+                        $people->put($person_id, true);
+                    }
+                    $this->buffers['movie_person'][] = [
+                        'movie_id' => $movie_id,
+                        'person_id' => $person_id,
+                        'job' => Arr::get($crew, 'job'),
+                        'character' => null,
+                        'order' => null,
+                    ];
+                }
+                $this->flushBuffers(500);
+            }
+        } catch (\Throwable $e) {
+            $this->error($e->getMessage());
+            throw $e;
+        } finally {
+            $progress->clear();
+        }
+    }
+
+    private function importKeywords(): void
+    {
+        $this->info('Importing keywords');
+        $reader = Reader::createFromPath(storage_path('app/csv/keywords.csv'));
+        $reader->setHeaderOffset(0);
+        $keywords = collect();
+        $progress = $this->getProgressBar($reader->count());
+        try {
+            foreach ($reader->getRecords() as $record) {
+                $progress->setMessage($this->message);
+                $progress->advance();
+                $movie_id = Arr::get($record, 'id');
+                foreach ($this->fixAndDecodeJson(Arr::get($record, 'keywords')) as $keyword_data) {
+                    $id = Arr::get($keyword_data, 'id');
+                    if (! $keywords->has($id)) {
+                        $this->buffers['keywords'][] = array_merge($keyword_data, [
+                            'created_at' => now()->toDateTimeString(),
+                            'updated_at' => now()->toDateTimeString(),
+                        ]);
+                        $keywords->put($id, true);
+                    }
+                    $this->buffers['keyword_movie'][] = [
+                        'keyword_id' => $id,
+                        'movie_id' => $movie_id,
+                    ];
+                }
+                $this->flushBuffers(500);
+            }
+            $this->flushBuffers();
+        } catch (\Throwable $e) {
+            $this->error($e->getMessage());
+            throw $e;
+        } finally {
+            $progress->clear();
+        }
+    }
+
     private function importMetadata(): void
     {
         $this->info('Importing movies, genres and companies');
@@ -62,18 +160,18 @@ class ImportFromCsvCommand extends Command
         $movies = collect();
         $genres = collect();
         $companies = collect();
-        $progress = $this->output->createProgressBar($reader->count());
-        $progress->setFormat('debug');
-        $line = 0;
+        $progress = $this->getProgressBar($reader->count());
         try {
             $records = $reader->getRecords();
             $incomplete = null;
             foreach ($records as $record) {
-                $line++;
+                $progress->setMessage($this->message);
+                $progress->advance();
                 if ($incomplete) {
                     $extra_values = array_slice(array_values($record), 0, 15);
                     $incomplete[9] .= array_shift($extra_values);
                     $record = array_combine($columns, array_merge($incomplete, $extra_values));
+                    $incomplete = null;
                 } elseif (Arr::get($record, 'popularity') === null) {
                     // Broken line.
                     $incomplete = array_slice(array_values($record), 0, 10);
@@ -101,11 +199,16 @@ class ImportFromCsvCommand extends Command
                     'imdb_id' => Arr::get($record, 'imdb_id'),
                     'homepage' => Arr::get($record, 'homepage'),
                     'release_date' => Arr::get($record, 'release_date') ?: null,
+                    'created_at' => now()->toDateTimeString(),
+                    'updated_at' => now()->toDateTimeString(),
                 ];
                 foreach ($this->fixAndDecodeJson(Arr::get($record, 'genres')) as $genre_data) {
                     $genre_id = $genre_data['id'];
                     if (! $genres->has($genre_id)) {
-                        Genre::create($genre_data);
+                        $this->buffers['genres'][] = array_merge($genre_data, [
+                            'created_at' => now()->toDateTimeString(),
+                            'updated_at' => now()->toDateTimeString(),
+                        ]);
                         $genres->put($genre_id, true);
                     }
                     $this->buffers['genre_movie'][] = [
@@ -117,7 +220,10 @@ class ImportFromCsvCommand extends Command
                     $company_id = $company_data['id'];
 
                     if (! $companies->has($company_id)) {
-                        Company::create($company_data);
+                        $this->buffers['companies'][] = array_merge($company_data, [
+                            'created_at' => now()->toDateTimeString(),
+                            'updated_at' => now()->toDateTimeString(),
+                        ]);
                         $companies->put($company_id, true);
                     }
                     $this->buffers['company_movie'][] = [
@@ -125,13 +231,10 @@ class ImportFromCsvCommand extends Command
                         'movie_id' => $movie_id,
                     ];
                 }
-                $this->flushBuffers(300);
-                $progress->advance();
-                $a = 0;
+                $this->flushBuffers(500);
             }
             $this->flushBuffers();
         } catch (\Throwable $e) {
-            $a = 0;
             throw $e;
         } finally {
             $progress->clear();
@@ -142,7 +245,20 @@ class ImportFromCsvCommand extends Command
     {
         foreach ($this->buffers as $table => $rows) {
             if (count($rows) > $max) {
-                DB::table($table)->insert($rows);
+                $this->inserted += count($rows);
+                $this->message = number_format($this->inserted, 0, ',', '.');
+                try {
+                    DB::table($table)->insert($rows);
+                } catch (\Throwable $e) {
+                    if ($e->getCode() === '23000') {
+                        foreach ($rows as $row) {
+                            DB::table($table)->insertOrIgnore($row);
+                        }
+                    } else {
+                        throw $e;
+                    }
+                }
+
                 $this->buffers[$table] = [];
             }
         }
@@ -151,7 +267,7 @@ class ImportFromCsvCommand extends Command
     /**
      * @noinspection all
      */
-    private function fixAndDecodeJson(string $json): Collection
+    private function fixAndDecodeJson(string $json): array
     {
         $regex = <<<'REGEX'
 ~
@@ -160,11 +276,33 @@ class ImportFromCsvCommand extends Command
   | '([^'\\]*(?:\\.|[^'\\]*)*)'
 ~x
 REGEX;
-        $fixed = preg_replace_callback($regex, function ($matches) {
+        $fixed_quotes = preg_replace_callback($regex, function ($matches) {
             return '"'.preg_replace('~\\\\.(*SKIP)(*F)|"~', '\\"', $matches[1]).'"';
         }, $json);
-        $fixed = str_replace('\\xa0', '', $fixed);
+        $replacements = [
+            "\'" => "'",
+            '\\xa0' => '',
+            '"profile_path": None' => '"profile_path": null',
+            ': ""' => ': null',
+        ];
+        $fixed = str_replace(array_keys($replacements), array_values($replacements), $fixed_quotes);
+        try {
+            return json_decode($fixed, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            $this->error($e->getMessage());
+            $this->output->writeln($fixed);
+            throw $e;
+        }
+    }
 
-        return collect(json_decode($fixed, true, 512, JSON_THROW_ON_ERROR));
+    private function getProgressBar(int $count): ProgressBar
+    {
+        $progress = $this->output->createProgressBar($count);
+        ProgressBar::setFormatDefinition('debug-message', ProgressBar::getFormatDefinition('debug').' | Inserts: %message%');
+        $progress->setFormat('debug-message');
+        $progress->setMessage(number_format($this->inserted, 0, ',', '.'));
+        $progress->setRedrawFrequency(1);
+
+        return $progress;
     }
 }
