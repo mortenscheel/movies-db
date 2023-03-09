@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('movies', function (Blueprint $table) {
             $table->id();
             $table->string('title')->index();
-            $table->string('tagline')->nullable();
+            $table->text('tagline')->nullable();
             $table->text('description');
             $table->string('poster');
             $table->boolean('adult')->default(false);
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unsignedInteger('vote_count');
             $table->char('imdb_id', 9);
             $table->string('homepage')->nullable();
-            $table->date('released_at');
+            $table->date('release_date')->nullable();
             $table->timestamps();
         });
         Schema::create('genres', function (Blueprint $table) {
