@@ -4,6 +4,7 @@
 
 namespace App\Console\Commands;
 
+use App\TmdbJsonFixer;
 use Arr;
 use DB;
 use Illuminate\Console\Command;
@@ -38,12 +39,15 @@ class ImportFromCsvCommand extends Command
         'movie_person' => [],
     ];
 
+    private TmdbJsonFixer $fixer;
+
     private int $inserted = 0;
 
     private string $message = '0';
 
     public function handle(): void
     {
+        $this->fixer = new TmdbJsonFixer();
         foreach (array_keys($this->buffers) as $table) {
             DB::table($table)->truncate();
         }
@@ -64,7 +68,7 @@ class ImportFromCsvCommand extends Command
                 $progress->setMessage($this->message);
                 $progress->advance();
                 $movie_id = Arr::get($record, 'id');
-                foreach ($this->fixAndDecodeJson(Arr::get($record, 'cast')) as $cast) {
+                foreach ($this->fixer->fix(Arr::get($record, 'cast')) as $cast) {
                     $person_id = Arr::get($cast, 'id');
                     if (! $people->has($person_id)) {
                         $this->buffers['people'][] = [
@@ -84,7 +88,7 @@ class ImportFromCsvCommand extends Command
                         'order' => Arr::get($cast, 'order'),
                     ];
                 }
-                foreach ($this->fixAndDecodeJson(Arr::get($record, 'crew')) as $crew) {
+                foreach ($this->fixer->fix(Arr::get($record, 'crew')) as $crew) {
                     $person_id = Arr::get($crew, 'id');
                     if (! $people->has($person_id)) {
                         $this->buffers['people'][] = [
@@ -126,7 +130,7 @@ class ImportFromCsvCommand extends Command
                 $progress->setMessage($this->message);
                 $progress->advance();
                 $movie_id = Arr::get($record, 'id');
-                foreach ($this->fixAndDecodeJson(Arr::get($record, 'keywords')) as $keyword_data) {
+                foreach ($this->fixer->fix(Arr::get($record, 'keywords')) as $keyword_data) {
                     $id = Arr::get($keyword_data, 'id');
                     if (! $keywords->has($id)) {
                         $this->buffers['keywords'][] = array_merge($keyword_data, [
@@ -202,7 +206,7 @@ class ImportFromCsvCommand extends Command
                     'created_at' => now()->toDateTimeString(),
                     'updated_at' => now()->toDateTimeString(),
                 ];
-                foreach ($this->fixAndDecodeJson(Arr::get($record, 'genres')) as $genre_data) {
+                foreach ($this->fixer->fix(Arr::get($record, 'genres')) as $genre_data) {
                     $genre_id = $genre_data['id'];
                     if (! $genres->has($genre_id)) {
                         $this->buffers['genres'][] = array_merge($genre_data, [
@@ -216,7 +220,7 @@ class ImportFromCsvCommand extends Command
                         'movie_id' => $movie_id,
                     ];
                 }
-                foreach ($this->fixAndDecodeJson(Arr::get($record, 'production_companies')) as $company_data) {
+                foreach ($this->fixer->fix(Arr::get($record, 'production_companies')) as $company_data) {
                     $company_id = $company_data['id'];
 
                     if (! $companies->has($company_id)) {
@@ -269,45 +273,6 @@ class ImportFromCsvCommand extends Command
      */
     private function fixAndDecodeJson(string $json): array
     {
-        $regex = <<<'REGEX'
-~
-    "[^"\\]*(?:\\.|[^"\\]*)*"
-    (*SKIP)(*F)
-  | '([^'\\]*(?:\\.|[^'\\]*)*)'
-~x
-REGEX;
-        $fixed_quotes = preg_replace_callback($regex, function ($matches) {
-            return '"'.preg_replace('~\\\\.(*SKIP)(*F)|"~', '\\"', $matches[1]).'"';
-        }, $json);
-        $replacements = [
-            "\'" => "'",
-            '\\xa0' => '',
-            '\\xa1' => '',
-            '\\xa2' => '',
-            '\\xa3' => '',
-            '\\xa4' => '',
-            '\\xa5' => '',
-            '\\xa6' => '',
-            '\\xa7' => '',
-            '\\xa8' => '',
-            '\\xa9' => '',
-            '\\xaa' => '',
-            '\\xab' => '',
-            '\\xac' => '',
-            '\\xad' => '',
-            '\\xae' => '',
-            '\\xaf' => '',
-            '"profile_path": None' => '"profile_path": null',
-            ': ""' => ': null',
-        ];
-        $fixed = str_replace(array_keys($replacements), array_values($replacements), $fixed_quotes);
-        try {
-            return json_decode($fixed, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable $e) {
-            $this->error($e->getMessage());
-            $this->output->writeln($fixed);
-            throw $e;
-        }
     }
 
     private function getProgressBar(int $count): ProgressBar
