@@ -10,6 +10,7 @@ use DB;
 use Illuminate\Console\Command;
 use League\Csv\Reader;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Throwable;
 
 class ImportFromCsvCommand extends Command
 {
@@ -54,68 +55,42 @@ class ImportFromCsvCommand extends Command
         $this->importMetadata();
         $this->importKeywords();
         $this->importPeople();
+        $this->importCast();
+    }
+
+    private function importCast(): void
+    {
+        $this->info('Importing cast');
+        $reader = Reader::createFromPath(storage_path('app/csv/movie_person.csv'));
+        $reader->setHeaderOffset(0);
+        $progress = $this->getProgressBar(1026788);
+        foreach ($reader->getRecords() as $i => $record) {
+            $record = array_map(fn ($val) => $val === '' ? null : $val, $record);
+            $progress->setMessage($this->message);
+            $progress->advance();
+            $this->buffers['movie_person'][] = $record;
+            if ($i % 500 === 0) {
+                $this->flushBuffers();
+            }
+        }
+        $progress->clear();
     }
 
     private function importPeople(): void
     {
         $this->info('Importing people');
-        $reader = Reader::createFromPath(storage_path('app/csv/credits.csv'));
+        $reader = Reader::createFromPath(storage_path('app/csv/people.csv'));
         $reader->setHeaderOffset(0);
-        $people = collect();
         $progress = $this->getProgressBar($reader->count());
-        try {
-            foreach ($reader->getRecords() as $record) {
-                $progress->setMessage($this->message);
-                $progress->advance();
-                $movie_id = Arr::get($record, 'id');
-                foreach ($this->fixer->fix(Arr::get($record, 'cast')) as $cast) {
-                    $person_id = Arr::get($cast, 'id');
-                    if (! $people->has($person_id)) {
-                        $this->buffers['people'][] = [
-                            'id' => $person_id,
-                            'name' => Arr::get($cast, 'name'),
-                            'profile' => Arr::get($cast, 'profile_path'),
-                            'created_at' => now()->toDateTimeString(),
-                            'updated_at' => now()->toDateTimeString(),
-                        ];
-                        $people->put($person_id, true);
-                    }
-                    $this->buffers['movie_person'][] = [
-                        'movie_id' => $movie_id,
-                        'person_id' => $person_id,
-                        'job' => 'Actor',
-                        'character' => Arr::get($cast, 'character'),
-                        'order' => Arr::get($cast, 'order'),
-                    ];
-                }
-                foreach ($this->fixer->fix(Arr::get($record, 'crew')) as $crew) {
-                    $person_id = Arr::get($crew, 'id');
-                    if (! $people->has($person_id)) {
-                        $this->buffers['people'][] = [
-                            'id' => $person_id,
-                            'name' => Arr::get($crew, 'name'),
-                            'profile' => Arr::get($crew, 'profile_path'),
-                            'created_at' => now()->toDateTimeString(),
-                            'updated_at' => now()->toDateTimeString(),
-                        ];
-                        $people->put($person_id, true);
-                    }
-                    $this->buffers['movie_person'][] = [
-                        'movie_id' => $movie_id,
-                        'person_id' => $person_id,
-                        'job' => Arr::get($crew, 'job'),
-                        'character' => null,
-                        'order' => null,
-                    ];
-                }
-                $this->flushBuffers(500);
+        foreach ($reader->getRecords() as $i => $record) {
+            $progress->setMessage($this->message);
+            $progress->advance();
+            $this->buffers['people'][] = $record;
+            if ($i % 500 === 0) {
+                $this->flushBuffers();
             }
-        } catch (\Throwable $e) {
-            $this->error($e->getMessage());
-            throw $e;
-        } finally {
-            $progress->clear();
         }
+        $progress->clear();
     }
 
     private function importKeywords(): void
@@ -147,7 +122,7 @@ class ImportFromCsvCommand extends Command
                 $this->flushBuffers(500);
             }
             $this->flushBuffers();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error($e->getMessage());
             throw $e;
         } finally {
@@ -238,7 +213,7 @@ class ImportFromCsvCommand extends Command
                 $this->flushBuffers(500);
             }
             $this->flushBuffers();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw $e;
         } finally {
             $progress->clear();
@@ -253,7 +228,7 @@ class ImportFromCsvCommand extends Command
                 $this->message = number_format($this->inserted, 0, ',', '.');
                 try {
                     DB::table($table)->insert($rows);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     if ($e->getCode() === '23000') {
                         foreach ($rows as $row) {
                             DB::table($table)->insertOrIgnore($row);

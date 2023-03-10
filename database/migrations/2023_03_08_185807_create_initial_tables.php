@@ -68,6 +68,7 @@ return new class extends Migration
         Schema::create('movie_person', function (Blueprint $table) {
             $table->foreignId('movie_id');
             $table->foreignId('person_id');
+            $table->unsignedInteger('cast_id')->nullable();
             $table->string('job');
             $table->text('character')->nullable();
             $table->unsignedTinyInteger('order')->nullable();
