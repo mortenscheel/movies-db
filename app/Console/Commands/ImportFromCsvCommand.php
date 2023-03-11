@@ -1,11 +1,14 @@
 <?php
 
+/** @noinspection PhpExceptionImmediatelyRethrownInspection */
 /** @noinspection PhpUnhandledExceptionInspection */
 
 namespace App\Console\Commands;
 
 use App\TmdbJsonFixer;
 use Arr;
+use function array_slice;
+use function count;
 use DB;
 use Illuminate\Console\Command;
 use League\Csv\Reader;
@@ -37,7 +40,8 @@ class ImportFromCsvCommand extends Command
         'keywords' => [],
         'keyword_movie' => [],
         'people' => [],
-        'movie_person' => [],
+        'cast' => [],
+        'crew' => [],
     ];
 
     private TmdbJsonFixer $fixer;
@@ -56,19 +60,38 @@ class ImportFromCsvCommand extends Command
         $this->importKeywords();
         $this->importPeople();
         $this->importCast();
+        $this->importCrew();
+    }
+
+    private function importCrew(): void
+    {
+        $this->info('Importing crew');
+        $reader = Reader::createFromPath(storage_path('app/csv/crew.csv'));
+        $reader->setHeaderOffset(0);
+        $progress = $this->getProgressBar(464314);
+        foreach ($reader->getRecords() as $i => $record) {
+            $record = array_map(fn ($val) => $val === '' ? null : $val, $record);
+            $progress->setMessage($this->message);
+            $progress->advance();
+            $this->buffers['crew'][] = $record;
+            if ($i % 500 === 0) {
+                $this->flushBuffers();
+            }
+        }
+        $progress->clear();
     }
 
     private function importCast(): void
     {
         $this->info('Importing cast');
-        $reader = Reader::createFromPath(storage_path('app/csv/movie_person.csv'));
+        $reader = Reader::createFromPath(storage_path('app/csv/cast.csv'));
         $reader->setHeaderOffset(0);
-        $progress = $this->getProgressBar(1026788);
+        $progress = $this->getProgressBar(1678566036);
         foreach ($reader->getRecords() as $i => $record) {
             $record = array_map(fn ($val) => $val === '' ? null : $val, $record);
             $progress->setMessage($this->message);
             $progress->advance();
-            $this->buffers['movie_person'][] = $record;
+            $this->buffers['cast'][] = $record;
             if ($i % 500 === 0) {
                 $this->flushBuffers();
             }
@@ -81,7 +104,7 @@ class ImportFromCsvCommand extends Command
         $this->info('Importing people');
         $reader = Reader::createFromPath(storage_path('app/csv/people.csv'));
         $reader->setHeaderOffset(0);
-        $progress = $this->getProgressBar($reader->count());
+        $progress = $this->getProgressBar(353343);
         foreach ($reader->getRecords() as $i => $record) {
             $progress->setMessage($this->message);
             $progress->advance();
@@ -99,7 +122,7 @@ class ImportFromCsvCommand extends Command
         $reader = Reader::createFromPath(storage_path('app/csv/keywords.csv'));
         $reader->setHeaderOffset(0);
         $keywords = collect();
-        $progress = $this->getProgressBar($reader->count());
+        $progress = $this->getProgressBar(46419);
         try {
             foreach ($reader->getRecords() as $record) {
                 $progress->setMessage($this->message);
@@ -139,7 +162,7 @@ class ImportFromCsvCommand extends Command
         $movies = collect();
         $genres = collect();
         $companies = collect();
-        $progress = $this->getProgressBar($reader->count());
+        $progress = $this->getProgressBar(45466);
         try {
             $records = $reader->getRecords();
             $incomplete = null;
@@ -164,11 +187,11 @@ class ImportFromCsvCommand extends Command
                 $movies->put($movie_id, true);
                 $this->buffers['movies'][] = [
                     'id' => $movie_id,
+                    'user_id' => 1,
                     'title' => Arr::get($record, 'title'),
                     'tagline' => Arr::get($record, 'tagline'),
                     'description' => Arr::get($record, 'overview'),
                     'poster' => Arr::get($record, 'poster_path'),
-                    'adult' => Arr::get($record, 'adult') === 'True',
                     'budget' => Arr::get($record, 'budget') ?: 0,
                     'revenue' => Arr::get($record, 'revenue') ?: 0,
                     'runtime' => Arr::get($record, 'runtime') ?: 0,

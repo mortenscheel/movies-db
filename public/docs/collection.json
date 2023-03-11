@@ -1,0 +1,269 @@
+{
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "http:\/\/localhost:1001"
+        }
+    ],
+    "info": {
+        "name": "Movie-DB",
+        "_postman_id": "37151ee9-fbce-4651-aed1-43041fe18bd6",
+        "description": "",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
+    },
+    "item": [
+        {
+            "name": "Movies",
+            "description": "",
+            "item": [
+                {
+                    "name": "List movies",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/movies",
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Pagination page. This field must be at least 1.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15",
+                                    "description": "Number of movies per page. This field must be at least 1. This field must not be greater than 100.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "include",
+                                    "value": "genres%2Ccast",
+                                    "description": "Relationships to include (comma separated). Allowed values: genres, companies, keywords, cast, crew, user.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "fields",
+                                    "value": "",
+                                    "description": "Fields to include (comma separated). Allowed values: id, title, tagline, description, poster, budget, revenue, runtime, popularity, vote_average, vote_count, imdb_id, homepage, release_date.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "",
+                                    "description": "Fields to sort by (comma separated) (prefix - for descending). Allowed values: id, title, runtime, popularity, release_date.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "filter%5Bid%5D",
+                                    "value": "",
+                                    "description": "Filter by id (csv)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "filter%5Btitle%5D",
+                                    "value": "",
+                                    "description": "Filter by title (csv)",
+                                    "disabled": true
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/movies?page=1&per_page=15&include=genres%2Ccast&fields=&sort=&filter%5Bid%5D=&filter%5Btitle%5D="
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\":[{\"id\":469190,\"title\":\"Programmable real-time orchestration\",\"tagline\":\"Cross-group assymetric archive\",\"homepage\":\"http:\\\/\\\/www.predovic.com\\\/maxime-sunt-eaque-occaecati-ducimus\",\"budget\":1982317,\"revenue\":63261981,\"popularity\":432,\"vote_average\":5,\"vote_count\":10139,\"runtime\":48.7,\"release_date\":\"1999-01-06\",\"genres\":[{\"id\":10780,\"name\":\"Enterprise-wide global knowledgebase\"}],\"keywords\":[{\"id\":238891,\"name\":\"qui\"}],\"companies\":[{\"id\":96074,\"name\":\"Hilpert, Abbott and Haley\"}],\"cast\":[{\"id\":1908278,\"name\":\"Prof. Providenci Trantow\",\"character\":\"Ulises Casper Jr.\"}],\"crew\":[{\"id\":1908278,\"name\":\"Prof. Providenci Trantow\",\"job\":null}]},{\"id\":469191,\"title\":\"Reduced motivating installation\",\"tagline\":\"Operative dedicated policy\",\"homepage\":\"http:\\\/\\\/treutel.info\\\/suscipit-ut-in-vel-magni\",\"budget\":255243185,\"revenue\":235830942,\"popularity\":462,\"vote_average\":9,\"vote_count\":1124,\"runtime\":34.61,\"release_date\":\"1985-02-23\",\"genres\":[{\"id\":10781,\"name\":\"Mandatory tertiary structure\"}],\"keywords\":[{\"id\":238892,\"name\":\"facilis\"}],\"companies\":[{\"id\":96075,\"name\":\"Harris-Herman\"}],\"cast\":[{\"id\":1908280,\"name\":\"Guy Bednar\",\"character\":\"Zoey Baumbach\"}],\"crew\":[{\"id\":1908280,\"name\":\"Guy Bednar\",\"job\":null}]}],\"links\":{\"first\":\"\\\/?page=1\",\"last\":\"\\\/?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":1,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"active\":false},{\"url\":\"\\\/?page=1\",\"label\":\"1\",\"active\":true},{\"url\":null,\"label\":\"Next &raquo;\",\"active\":false}],\"path\":\"\\\/\",\"per_page\":15,\"to\":2,\"total\":2}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Store movie",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/movies",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/movies"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"title\":\"nesciunt\",\"tagline\":\"ab\",\"description\":\"Sint modi architecto incidunt magni saepe animi culpa.\",\"poster\":\"ipsam\",\"budget\":17,\"revenue\":8,\"runtime\":34,\"popularity\":36,\"vote_average\":9,\"vote_count\":5,\"imdb_id\":\"culpa\",\"homepage\":\"https:\\\/\\\/waters.biz\\\/minus-est-minima-hic-quisquam-sit-explicabo.html\",\"release_date\":\"2023-03-11\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"id\":469192,\"title\":\"Versatile full-range flexibility\",\"tagline\":\"Robust context-sensitive moderator\",\"homepage\":\"http:\\\/\\\/armstrong.com\\\/qui-aut-illum-delectus-voluptas-impedit.html\",\"budget\":135871127,\"revenue\":121579395,\"popularity\":192,\"vote_average\":2,\"vote_count\":4246,\"runtime\":309.77,\"release_date\":\"1983-12-09\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show movie",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/movies\/:id",
+                            "query": [
+                                {
+                                    "key": "include",
+                                    "value": "genres%2Ccast",
+                                    "description": "Relationships to include (comma separated). Allowed values: genres, companies, keywords, cast, crew, user.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "fields",
+                                    "value": "",
+                                    "description": "Fields to include (comma separated). Allowed values: id, title, tagline, description, poster, budget, revenue, runtime, popularity, vote_average, vote_count, imdb_id, homepage, release_date.",
+                                    "disabled": true
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/movies\/:id?include=genres%2Ccast&fields=",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "2",
+                                    "description": "The ID of the movie."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"id\":469193,\"title\":\"Networked homogeneous groupware\",\"tagline\":\"Customer-focused didactic benchmark\",\"homepage\":\"http:\\\/\\\/botsford.com\\\/corporis-ut-maiores-repellat-consequatur-ea-ullam-quo\",\"budget\":28636443,\"revenue\":300162735,\"popularity\":541,\"vote_average\":1,\"vote_count\":1017,\"runtime\":714.94,\"release_date\":\"1996-09-25\",\"genres\":[{\"id\":10782,\"name\":\"Polarised 4thgeneration functionalities\"}],\"cast\":[{\"id\":1908282,\"name\":\"Buck Altenwerth\",\"character\":\"Miss Nola Crist\"}],\"crew\":[{\"id\":1908282,\"name\":\"Buck Altenwerth\",\"job\":null}]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update movie",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/movies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/movies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "2",
+                                    "description": "The ID of the movie."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"title\":\"aut\",\"tagline\":\"et\",\"description\":\"Sit voluptas nihil aliquam iure nulla.\",\"poster\":\"cum\",\"budget\":12,\"revenue\":53,\"runtime\":0,\"popularity\":31,\"vote_average\":1,\"vote_count\":42,\"imdb_id\":\"dolorem\",\"homepage\":\"http:\\\/\\\/upton.com\\\/eaque-sed-sunt-ut-voluptas-vel-autem-voluptas-vel.html\",\"release_date\":\"2023-03-11\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"id\":469194,\"title\":\"Cloned empowering support\",\"tagline\":\"Focused web-enabled time-frame\",\"homepage\":\"https:\\\/\\\/www.denesik.com\\\/et-aut-corporis-asperiores-eveniet-voluptatem-est-et\",\"budget\":184179150,\"revenue\":284591834,\"popularity\":77,\"vote_average\":5,\"vote_count\":2642,\"runtime\":474.54,\"release_date\":\"2019-05-13\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete movie",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/movies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/movies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "2",
+                                    "description": "The ID of the movie."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"deleted\":true}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "key",
+                "value": null,
+                "type": "string"
+            }
+        ]
+    }
+}

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('movies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
             $table->string('title')->index();
             $table->text('tagline')->nullable();
             $table->text('description');
-            $table->string('poster');
-            $table->boolean('adult')->default(false);
+            $table->string('poster')->nullable();
             $table->unsignedInteger('budget');
             $table->unsignedInteger('revenue');
             $table->decimal('runtime')->index();
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unsignedInteger('vote_count');
             $table->char('imdb_id', 9);
             $table->string('homepage')->nullable();
-            $table->date('release_date')->nullable();
+            $table->date('release_date')->nullable()->index();
             $table->timestamps();
         });
         Schema::create('genres', function (Blueprint $table) {
@@ -65,13 +65,18 @@ return new class extends Migration
             $table->string('profile')->nullable();
             $table->timestamps();
         });
-        Schema::create('movie_person', function (Blueprint $table) {
+        Schema::create('cast', function (Blueprint $table) {
             $table->foreignId('movie_id');
             $table->foreignId('person_id');
             $table->unsignedInteger('cast_id')->nullable();
+            $table->text('character');
+            $table->smallInteger('order')->nullable();
+            $table->primary(['movie_id', 'person_id']);
+        });
+        Schema::create('crew', function (Blueprint $table) {
+            $table->foreignId('movie_id');
+            $table->foreignId('person_id');
             $table->string('job');
-            $table->text('character')->nullable();
-            $table->unsignedTinyInteger('order')->nullable();
             $table->primary(['movie_id', 'person_id']);
         });
     }

@@ -1,0 +1,980 @@
+openapi: 3.0.3
+info:
+  title: Movie-DB
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:1001'
+paths:
+  /api/movies:
+    get:
+      summary: 'List movies'
+      operationId: listMovies
+      description: ''
+      parameters:
+        -
+          in: query
+          name: page
+          description: 'Pagination page. This field must be at least 1.'
+          example: 1
+          required: false
+          schema:
+            type: integer
+            description: 'Pagination page. This field must be at least 1.'
+            example: 1
+        -
+          in: query
+          name: per_page
+          description: 'Number of movies per page. This field must be at least 1. This field must not be greater than 100.'
+          example: 15
+          required: false
+          schema:
+            type: integer
+            description: 'Number of movies per page. This field must be at least 1. This field must not be greater than 100.'
+            example: 15
+        -
+          in: query
+          name: filter
+          description: ''
+          example: null
+          required: false
+          schema:
+            type: object
+            description: ''
+            example: null
+            properties: []
+        -
+          in: query
+          name: include
+          description: 'Relationships to include (comma separated). Allowed values: genres, companies, keywords, cast, crew, user.'
+          example: 'genres,cast'
+          required: false
+          schema:
+            type: string
+            description: 'Relationships to include (comma separated). Allowed values: genres, companies, keywords, cast, crew, user.'
+            example: 'genres,cast'
+        -
+          in: query
+          name: fields
+          description: 'Fields to include (comma separated). Allowed values: id, title, tagline, description, poster, budget, revenue, runtime, popularity, vote_average, vote_count, imdb_id, homepage, release_date.'
+          example: null
+          required: false
+          schema:
+            type: string
+            description: 'Fields to include (comma separated). Allowed values: id, title, tagline, description, poster, budget, revenue, runtime, popularity, vote_average, vote_count, imdb_id, homepage, release_date.'
+            example: null
+        -
+          in: query
+          name: sort
+          description: 'Fields to sort by (comma separated) (prefix - for descending). Allowed values: id, title, runtime, popularity, release_date.'
+          example: null
+          required: false
+          schema:
+            type: string
+            description: 'Fields to sort by (comma separated) (prefix - for descending). Allowed values: id, title, runtime, popularity, release_date.'
+            example: null
+        -
+          in: query
+          name: 'filter[id]'
+          description: 'Filter by id (csv)'
+          example: null
+          required: false
+          schema:
+            type: string
+            description: 'Filter by id (csv)'
+            example: null
+        -
+          in: query
+          name: 'filter[title]'
+          description: 'Filter by title (csv)'
+          example: null
+          required: false
+          schema:
+            type: string
+            description: 'Filter by title (csv)'
+            example: null
+        -
+          in: header
+          name: Authorization
+          description: ''
+          example: 'Bearer {YOUR_API_KEY}'
+          schema:
+            type: string
+        -
+          in: header
+          name: Accept
+          description: ''
+          example: application/json
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      id: 469190
+                      title: 'Programmable real-time orchestration'
+                      tagline: 'Cross-group assymetric archive'
+                      homepage: 'http://www.predovic.com/maxime-sunt-eaque-occaecati-ducimus'
+                      budget: 1982317
+                      revenue: 63261981
+                      popularity: 432
+                      vote_average: 5
+                      vote_count: 10139
+                      runtime: 48.7
+                      release_date: '1999-01-06'
+                      genres:
+                        -
+                          id: 10780
+                          name: 'Enterprise-wide global knowledgebase'
+                      keywords:
+                        -
+                          id: 238891
+                          name: qui
+                      companies:
+                        -
+                          id: 96074
+                          name: 'Hilpert, Abbott and Haley'
+                      cast:
+                        -
+                          id: 1908278
+                          name: 'Prof. Providenci Trantow'
+                          character: 'Ulises Casper Jr.'
+                      crew:
+                        -
+                          id: 1908278
+                          name: 'Prof. Providenci Trantow'
+                          job: null
+                    -
+                      id: 469191
+                      title: 'Reduced motivating installation'
+                      tagline: 'Operative dedicated policy'
+                      homepage: 'http://treutel.info/suscipit-ut-in-vel-magni'
+                      budget: 255243185
+                      revenue: 235830942
+                      popularity: 462
+                      vote_average: 9
+                      vote_count: 1124
+                      runtime: 34.61
+                      release_date: '1985-02-23'
+                      genres:
+                        -
+                          id: 10781
+                          name: 'Mandatory tertiary structure'
+                      keywords:
+                        -
+                          id: 238892
+                          name: facilis
+                      companies:
+                        -
+                          id: 96075
+                          name: Harris-Herman
+                      cast:
+                        -
+                          id: 1908280
+                          name: 'Guy Bednar'
+                          character: 'Zoey Baumbach'
+                      crew:
+                        -
+                          id: 1908280
+                          name: 'Guy Bednar'
+                          job: null
+                  links:
+                    first: '/?page=1'
+                    last: '/?page=1'
+                    prev: null
+                    next: null
+                  meta:
+                    current_page: 1
+                    from: 1
+                    last_page: 1
+                    links:
+                      -
+                        url: null
+                        label: '&laquo; Previous'
+                        active: false
+                      -
+                        url: '/?page=1'
+                        label: '1'
+                        active: true
+                      -
+                        url: null
+                        label: 'Next &raquo;'
+                        active: false
+                    path: /
+                    per_page: 15
+                    to: 2
+                    total: 2
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 469190
+                        title: 'Programmable real-time orchestration'
+                        tagline: 'Cross-group assymetric archive'
+                        homepage: 'http://www.predovic.com/maxime-sunt-eaque-occaecati-ducimus'
+                        budget: 1982317
+                        revenue: 63261981
+                        popularity: 432
+                        vote_average: 5
+                        vote_count: 10139
+                        runtime: 48.7
+                        release_date: '1999-01-06'
+                        genres:
+                          -
+                            id: 10780
+                            name: 'Enterprise-wide global knowledgebase'
+                        keywords:
+                          -
+                            id: 238891
+                            name: qui
+                        companies:
+                          -
+                            id: 96074
+                            name: 'Hilpert, Abbott and Haley'
+                        cast:
+                          -
+                            id: 1908278
+                            name: 'Prof. Providenci Trantow'
+                            character: 'Ulises Casper Jr.'
+                        crew:
+                          -
+                            id: 1908278
+                            name: 'Prof. Providenci Trantow'
+                            job: null
+                      -
+                        id: 469191
+                        title: 'Reduced motivating installation'
+                        tagline: 'Operative dedicated policy'
+                        homepage: 'http://treutel.info/suscipit-ut-in-vel-magni'
+                        budget: 255243185
+                        revenue: 235830942
+                        popularity: 462
+                        vote_average: 9
+                        vote_count: 1124
+                        runtime: 34.61
+                        release_date: '1985-02-23'
+                        genres:
+                          -
+                            id: 10781
+                            name: 'Mandatory tertiary structure'
+                        keywords:
+                          -
+                            id: 238892
+                            name: facilis
+                        companies:
+                          -
+                            id: 96075
+                            name: Harris-Herman
+                        cast:
+                          -
+                            id: 1908280
+                            name: 'Guy Bednar'
+                            character: 'Zoey Baumbach'
+                        crew:
+                          -
+                            id: 1908280
+                            name: 'Guy Bednar'
+                            job: null
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 469190
+                        title:
+                          type: string
+                          example: 'Programmable real-time orchestration'
+                        tagline:
+                          type: string
+                          example: 'Cross-group assymetric archive'
+                        homepage:
+                          type: string
+                          example: 'http://www.predovic.com/maxime-sunt-eaque-occaecati-ducimus'
+                        budget:
+                          type: integer
+                          example: 1982317
+                        revenue:
+                          type: integer
+                          example: 63261981
+                        popularity:
+                          type: integer
+                          example: 432
+                        vote_average:
+                          type: integer
+                          example: 5
+                        vote_count:
+                          type: integer
+                          example: 10139
+                        runtime:
+                          type: number
+                          example: 48.7
+                        release_date:
+                          type: string
+                          example: '1999-01-06'
+                        genres:
+                          type: array
+                          example:
+                            -
+                              id: 10780
+                              name: 'Enterprise-wide global knowledgebase'
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 10780
+                              name:
+                                type: string
+                                example: 'Enterprise-wide global knowledgebase'
+                        keywords:
+                          type: array
+                          example:
+                            -
+                              id: 238891
+                              name: qui
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 238891
+                              name:
+                                type: string
+                                example: qui
+                        companies:
+                          type: array
+                          example:
+                            -
+                              id: 96074
+                              name: 'Hilpert, Abbott and Haley'
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 96074
+                              name:
+                                type: string
+                                example: 'Hilpert, Abbott and Haley'
+                        cast:
+                          type: array
+                          example:
+                            -
+                              id: 1908278
+                              name: 'Prof. Providenci Trantow'
+                              character: 'Ulises Casper Jr.'
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 1908278
+                              name:
+                                type: string
+                                example: 'Prof. Providenci Trantow'
+                              character:
+                                type: string
+                                example: 'Ulises Casper Jr.'
+                        crew:
+                          type: array
+                          example:
+                            -
+                              id: 1908278
+                              name: 'Prof. Providenci Trantow'
+                              job: null
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 1908278
+                              name:
+                                type: string
+                                example: 'Prof. Providenci Trantow'
+                              job:
+                                type: string
+                                example: null
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: '/?page=1'
+                      last:
+                        type: string
+                        example: '/?page=1'
+                      prev:
+                        type: string
+                        example: null
+                      next:
+                        type: string
+                        example: null
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        example:
+                          -
+                            url: null
+                            label: '&laquo; Previous'
+                            active: false
+                          -
+                            url: '/?page=1'
+                            label: '1'
+                            active: true
+                          -
+                            url: null
+                            label: 'Next &raquo;'
+                            active: false
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                            label:
+                              type: string
+                              example: '&laquo; Previous'
+                            active:
+                              type: boolean
+                              example: false
+                      path:
+                        type: string
+                        example: /
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type: integer
+                        example: 2
+                      total:
+                        type: integer
+                        example: 2
+      tags:
+        - Movies
+    post:
+      summary: 'Store movie'
+      operationId: storeMovie
+      description: ''
+      parameters:
+        -
+          in: header
+          name: Authorization
+          description: ''
+          example: 'Bearer {YOUR_API_KEY}'
+          schema:
+            type: string
+        -
+          in: header
+          name: Accept
+          description: ''
+          example: application/json
+          schema:
+            type: string
+        -
+          in: header
+          name: Content-Type
+          description: ''
+          example: application/json
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  id: 469192
+                  title: 'Versatile full-range flexibility'
+                  tagline: 'Robust context-sensitive moderator'
+                  homepage: 'http://armstrong.com/qui-aut-illum-delectus-voluptas-impedit.html'
+                  budget: 135871127
+                  revenue: 121579395
+                  popularity: 192
+                  vote_average: 2
+                  vote_count: 4246
+                  runtime: 309.77
+                  release_date: '1983-12-09'
+                properties:
+                  id:
+                    type: integer
+                    example: 469192
+                  title:
+                    type: string
+                    example: 'Versatile full-range flexibility'
+                  tagline:
+                    type: string
+                    example: 'Robust context-sensitive moderator'
+                  homepage:
+                    type: string
+                    example: 'http://armstrong.com/qui-aut-illum-delectus-voluptas-impedit.html'
+                  budget:
+                    type: integer
+                    example: 135871127
+                  revenue:
+                    type: integer
+                    example: 121579395
+                  popularity:
+                    type: integer
+                    example: 192
+                  vote_average:
+                    type: integer
+                    example: 2
+                  vote_count:
+                    type: integer
+                    example: 4246
+                  runtime:
+                    type: number
+                    example: 309.77
+                  release_date:
+                    type: string
+                    example: '1983-12-09'
+      tags:
+        - Movies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: ''
+                  example: nesciunt
+                tagline:
+                  type: string
+                  description: ''
+                  example: ab
+                description:
+                  type: string
+                  description: ''
+                  example: 'Sint modi architecto incidunt magni saepe animi culpa.'
+                poster:
+                  type: string
+                  description: ''
+                  example: ipsam
+                budget:
+                  type: integer
+                  description: 'This field must be at least 0.'
+                  example: 17
+                revenue:
+                  type: integer
+                  description: 'This field must be at least 0.'
+                  example: 8
+                runtime:
+                  type: number
+                  description: 'This field must be at least 0.'
+                  example: 34
+                popularity:
+                  type: number
+                  description: 'This field must be at least 0.'
+                  example: 36
+                vote_average:
+                  type: number
+                  description: 'This field must be at least 0. This field must not be greater than 10.'
+                  example: 9
+                vote_count:
+                  type: integer
+                  description: 'This field must be at least 0.'
+                  example: 5
+                imdb_id:
+                  type: string
+                  description: ''
+                  example: culpa
+                homepage:
+                  type: string
+                  description: 'Must be a valid URL.'
+                  example: 'https://waters.biz/minus-est-minima-hic-quisquam-sit-explicabo.html'
+                release_date:
+                  type: string
+                  description: 'Must be a valid date in the format <code>Y-m-d</code>.'
+                  example: '2023-03-11'
+              required:
+                - title
+                - description
+                - budget
+                - revenue
+                - runtime
+                - popularity
+                - vote_average
+                - vote_count
+                - imdb_id
+  '/api/movies/{id}':
+    get:
+      summary: 'Show movie'
+      operationId: showMovie
+      description: ''
+      parameters:
+        -
+          in: query
+          name: include
+          description: 'Relationships to include (comma separated). Allowed values: genres, companies, keywords, cast, crew, user.'
+          example: 'genres,cast'
+          required: false
+          schema:
+            type: string
+            description: 'Relationships to include (comma separated). Allowed values: genres, companies, keywords, cast, crew, user.'
+            example: 'genres,cast'
+        -
+          in: query
+          name: fields
+          description: 'Fields to include (comma separated). Allowed values: id, title, tagline, description, poster, budget, revenue, runtime, popularity, vote_average, vote_count, imdb_id, homepage, release_date.'
+          example: null
+          required: false
+          schema:
+            type: string
+            description: 'Fields to include (comma separated). Allowed values: id, title, tagline, description, poster, budget, revenue, runtime, popularity, vote_average, vote_count, imdb_id, homepage, release_date.'
+            example: null
+        -
+          in: header
+          name: Authorization
+          description: ''
+          example: 'Bearer {YOUR_API_KEY}'
+          schema:
+            type: string
+        -
+          in: header
+          name: Accept
+          description: ''
+          example: application/json
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  id: 469193
+                  title: 'Networked homogeneous groupware'
+                  tagline: 'Customer-focused didactic benchmark'
+                  homepage: 'http://botsford.com/corporis-ut-maiores-repellat-consequatur-ea-ullam-quo'
+                  budget: 28636443
+                  revenue: 300162735
+                  popularity: 541
+                  vote_average: 1
+                  vote_count: 1017
+                  runtime: 714.94
+                  release_date: '1996-09-25'
+                  genres:
+                    -
+                      id: 10782
+                      name: 'Polarised 4thgeneration functionalities'
+                  cast:
+                    -
+                      id: 1908282
+                      name: 'Buck Altenwerth'
+                      character: 'Miss Nola Crist'
+                  crew:
+                    -
+                      id: 1908282
+                      name: 'Buck Altenwerth'
+                      job: null
+                properties:
+                  id:
+                    type: integer
+                    example: 469193
+                  title:
+                    type: string
+                    example: 'Networked homogeneous groupware'
+                  tagline:
+                    type: string
+                    example: 'Customer-focused didactic benchmark'
+                  homepage:
+                    type: string
+                    example: 'http://botsford.com/corporis-ut-maiores-repellat-consequatur-ea-ullam-quo'
+                  budget:
+                    type: integer
+                    example: 28636443
+                  revenue:
+                    type: integer
+                    example: 300162735
+                  popularity:
+                    type: integer
+                    example: 541
+                  vote_average:
+                    type: integer
+                    example: 1
+                  vote_count:
+                    type: integer
+                    example: 1017
+                  runtime:
+                    type: number
+                    example: 714.94
+                  release_date:
+                    type: string
+                    example: '1996-09-25'
+                  genres:
+                    type: array
+                    example:
+                      -
+                        id: 10782
+                        name: 'Polarised 4thgeneration functionalities'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 10782
+                        name:
+                          type: string
+                          example: 'Polarised 4thgeneration functionalities'
+                  cast:
+                    type: array
+                    example:
+                      -
+                        id: 1908282
+                        name: 'Buck Altenwerth'
+                        character: 'Miss Nola Crist'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1908282
+                        name:
+                          type: string
+                          example: 'Buck Altenwerth'
+                        character:
+                          type: string
+                          example: 'Miss Nola Crist'
+                  crew:
+                    type: array
+                    example:
+                      -
+                        id: 1908282
+                        name: 'Buck Altenwerth'
+                        job: null
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1908282
+                        name:
+                          type: string
+                          example: 'Buck Altenwerth'
+                        job:
+                          type: string
+                          example: null
+      tags:
+        - Movies
+    put:
+      summary: 'Update movie'
+      operationId: updateMovie
+      description: ''
+      parameters:
+        -
+          in: header
+          name: Authorization
+          description: ''
+          example: 'Bearer {YOUR_API_KEY}'
+          schema:
+            type: string
+        -
+          in: header
+          name: Accept
+          description: ''
+          example: application/json
+          schema:
+            type: string
+        -
+          in: header
+          name: Content-Type
+          description: ''
+          example: application/json
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  id: 469194
+                  title: 'Cloned empowering support'
+                  tagline: 'Focused web-enabled time-frame'
+                  homepage: 'https://www.denesik.com/et-aut-corporis-asperiores-eveniet-voluptatem-est-et'
+                  budget: 184179150
+                  revenue: 284591834
+                  popularity: 77
+                  vote_average: 5
+                  vote_count: 2642
+                  runtime: 474.54
+                  release_date: '2019-05-13'
+                properties:
+                  id:
+                    type: integer
+                    example: 469194
+                  title:
+                    type: string
+                    example: 'Cloned empowering support'
+                  tagline:
+                    type: string
+                    example: 'Focused web-enabled time-frame'
+                  homepage:
+                    type: string
+                    example: 'https://www.denesik.com/et-aut-corporis-asperiores-eveniet-voluptatem-est-et'
+                  budget:
+                    type: integer
+                    example: 184179150
+                  revenue:
+                    type: integer
+                    example: 284591834
+                  popularity:
+                    type: integer
+                    example: 77
+                  vote_average:
+                    type: integer
+                    example: 5
+                  vote_count:
+                    type: integer
+                    example: 2642
+                  runtime:
+                    type: number
+                    example: 474.54
+                  release_date:
+                    type: string
+                    example: '2019-05-13'
+      tags:
+        - Movies
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: ''
+                  example: aut
+                tagline:
+                  type: string
+                  description: ''
+                  example: et
+                description:
+                  type: string
+                  description: ''
+                  example: 'Sit voluptas nihil aliquam iure nulla.'
+                poster:
+                  type: string
+                  description: ''
+                  example: cum
+                budget:
+                  type: integer
+                  description: 'This field must be at least 0.'
+                  example: 12
+                revenue:
+                  type: integer
+                  description: 'This field must be at least 0.'
+                  example: 53
+                runtime:
+                  type: number
+                  description: 'This field must be at least 0.'
+                  example: 0
+                popularity:
+                  type: number
+                  description: 'This field must be at least 0.'
+                  example: 31
+                vote_average:
+                  type: number
+                  description: 'This field must be at least 0. This field must not be greater than 10.'
+                  example: 1
+                vote_count:
+                  type: integer
+                  description: 'This field must be at least 0.'
+                  example: 42
+                imdb_id:
+                  type: string
+                  description: ''
+                  example: dolorem
+                homepage:
+                  type: string
+                  description: 'Must be a valid URL.'
+                  example: 'http://upton.com/eaque-sed-sunt-ut-voluptas-vel-autem-voluptas-vel.html'
+                release_date:
+                  type: string
+                  description: 'Must be a valid date in the format <code>Y-m-d</code>.'
+                  example: '2023-03-11'
+    delete:
+      summary: 'Delete movie'
+      operationId: deleteMovie
+      description: ''
+      parameters:
+        -
+          in: header
+          name: Authorization
+          description: ''
+          example: 'Bearer {YOUR_API_KEY}'
+          schema:
+            type: string
+        -
+          in: header
+          name: Accept
+          description: ''
+          example: application/json
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  deleted: true
+                properties:
+                  deleted:
+                    type: boolean
+                    example: true
+      tags:
+        - Movies
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the movie.'
+        example: 2
+        required: true
+        schema:
+          type: integer
+tags:
+  -
+    name: Movies
+    description: ''
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: bearer
+      description: ''
+security:
+  -
+    default: []

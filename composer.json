@@ -15,11 +15,13 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
-        "league/csv": "^9.x-dev"
+        "league/csv": "^9.x-dev",
+        "spatie/laravel-query-builder": "^5.2"
     },
     "require-dev": {
         "doctrine/dbal": "^3.6",
         "fakerphp/faker": "^1.9.1",
+        "knuckleswtf/scribe": "^4.16",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Movie extends Model
@@ -16,6 +17,11 @@ class Movie extends Model
         'adult' => 'bool',
         'released_at' => 'date',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function genres(): BelongsToMany
     {
@@ -34,24 +40,14 @@ class Movie extends Model
 
     public function cast(): BelongsToMany
     {
-        return $this->belongsToMany(Person::class)->withPivot([
-            'job',
+        return $this->belongsToMany(Person::class, 'cast')->withPivot([
             'character',
             'order',
-        ])->using(Credit::class)->where('job', 'Actor');
+        ]);
     }
 
     public function crew(): BelongsToMany
     {
-        return $this->belongsToMany(Person::class)->withPivot(['job'])->using(Credit::class)->where('job', '!=', 'Actor');
-    }
-
-    public function people(): BelongsToMany
-    {
-        return $this->belongsToMany(Person::class)->withPivot([
-            'job',
-            'character',
-            'order',
-        ])->using(Credit::class);
+        return $this->belongsToMany(Person::class, 'crew')->withPivot(['job']);
     }
 }

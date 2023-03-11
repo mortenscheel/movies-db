@@ -39,8 +39,10 @@ class PrepareCsvCommand extends Command
         $reader->setHeaderOffset(0);
         $people_csv = Writer::createFromPath(storage_path('app/csv/people.csv'), 'wb');
         $people_csv->insertOne(['id', 'name', 'profile', 'created_at', 'updated_at']);
-        $movie_persion_csv = Writer::createFromPath(storage_path('app/csv/movie_person.csv'), 'wb');
-        $movie_persion_csv->insertOne(['movie_id', 'person_id', 'cast_id', 'job', 'character', 'order']);
+        $cast_csv = Writer::createFromPath(storage_path('app/csv/cast.csv'), 'wb');
+        $cast_csv->insertOne(['movie_id', 'person_id', 'cast_id', 'character', 'order']);
+        $crew_csv = Writer::createFromPath(storage_path('app/csv/crew.csv'), 'wb');
+        $crew_csv->insertOne(['movie_id', 'person_id', 'job']);
         $bar = $this->output->createProgressBar(45476);
         $bar->setFormat('debug');
         $processed = [];
@@ -60,11 +62,10 @@ class PrepareCsvCommand extends Command
                     $processed[$person_id] = true;
                     $people_csv->insertOne($person);
                 }
-                $movie_persion_csv->insertOne([
+                $cast_csv->insertOne([
                     'movie_id' => $movie_id,
                     'person_id' => $person_id,
                     'cast_id' => Arr::get($cast, 'cast_id'),
-                    'job' => 'Actor',
                     'character' => Arr::get($cast, 'character'),
                     'order' => Arr::get($cast, 'order'),
                 ]);
@@ -82,13 +83,10 @@ class PrepareCsvCommand extends Command
                     $processed[$person_id] = true;
                     $people_csv->insertOne($person);
                 }
-                $movie_persion_csv->insertOne([
+                $crew_csv->insertOne([
                     'movie_id' => $movie_id,
                     'person_id' => $person_id,
-                    'cast_id' => Arr::get($crew, 'cast_id'),
                     'job' => Arr::get($crew, 'job'),
-                    'character' => null,
-                    'order' => Arr::get($crew, 'order'),
                 ]);
             }
         }

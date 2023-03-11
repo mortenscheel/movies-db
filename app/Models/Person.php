@@ -12,12 +12,16 @@ class Person extends Model
 
     protected $guarded = [];
 
-    public function movies(): BelongsToMany
+    public function moviesAsCast(): BelongsToMany
     {
-        return $this->belongsToMany(Movie::class)->withPivot([
-            'job',
+        return $this->belongsToMany(Movie::class, 'cast')->withPivot([
             'character',
             'order',
-        ])->using(Credit::class);
+        ]);
+    }
+
+    public function moviesAsCrew(): BelongsToMany
+    {
+        return $this->belongsToMany(Movie::class, 'crew')->withPivot(['job']);
     }
 }
