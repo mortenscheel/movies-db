@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description');
             $table->string('poster')->nullable();
             $table->unsignedInteger('budget');
-            $table->unsignedInteger('revenue');
+            $table->unsignedInteger('revenue')->index();
             $table->decimal('runtime')->index();
             $table->decimal('popularity')->index();
             $table->decimal('vote_average');
@@ -35,8 +35,8 @@ return new class extends Migration
             $table->timestamps();
         });
         Schema::create('genre_movie', function (Blueprint $table) {
-            $table->foreignId('genre_id');
-            $table->foreignId('movie_id');
+            $table->foreignId('genre_id')->index();
+            $table->foreignId('movie_id')->index();
             $table->primary(['genre_id', 'movie_id']);
         });
         Schema::create('companies', function (Blueprint $table) {
@@ -45,8 +45,8 @@ return new class extends Migration
             $table->timestamps();
         });
         Schema::create('company_movie', function (Blueprint $table) {
-            $table->foreignId('company_id');
-            $table->foreignId('movie_id');
+            $table->foreignId('company_id')->index();
+            $table->foreignId('movie_id')->index();
             $table->primary(['company_id', 'movie_id']);
         });
         Schema::create('keywords', function (Blueprint $table) {
@@ -55,8 +55,8 @@ return new class extends Migration
             $table->timestamps();
         });
         Schema::create('keyword_movie', function (Blueprint $table) {
-            $table->foreignId('keyword_id');
-            $table->foreignId('movie_id');
+            $table->foreignId('keyword_id')->index();
+            $table->foreignId('movie_id')->index();
             $table->primary(['keyword_id', 'movie_id']);
         });
         Schema::create('people', function (Blueprint $table) {
@@ -66,16 +66,16 @@ return new class extends Migration
             $table->timestamps();
         });
         Schema::create('cast', function (Blueprint $table) {
-            $table->foreignId('movie_id');
-            $table->foreignId('person_id');
+            $table->foreignId('movie_id')->index();
+            $table->foreignId('person_id')->index();
             $table->unsignedInteger('cast_id')->nullable();
             $table->text('character');
-            $table->smallInteger('order')->nullable();
+            $table->smallInteger('order')->nullable()->index();
             $table->primary(['movie_id', 'person_id']);
         });
         Schema::create('crew', function (Blueprint $table) {
-            $table->foreignId('movie_id');
-            $table->foreignId('person_id');
+            $table->foreignId('movie_id')->index();
+            $table->foreignId('person_id')->index();
             $table->string('job');
             $table->primary(['movie_id', 'person_id']);
         });

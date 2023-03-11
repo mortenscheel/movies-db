@@ -2,20 +2,22 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Movie;
-use App\Models\Person;
 use DB;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card;
 
 class StatsOverview extends BaseWidget
 {
+    protected static ?int $sort = 1;
+
     protected function getCards(): array
     {
         return [
-            Card::make('Movies', Movie::count()),
-            Card::make('People', Person::count()),
-            Card::make('Credits', DB::table('movie_person')->count()),
+            Card::make('Movies', DB::table('movies')->count()),
+            Card::make('Cast', DB::table('cast')->count()),
+            Card::make('Crew', DB::table('crew')->count()),
+            Card::make('Genres', DB::table('genres')->count()),
+            Card::make('Keywords', DB::table('keywords')->count()),
         ];
     }
 }

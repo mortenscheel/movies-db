@@ -3,6 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MovieResource\Pages;
+use App\Filament\Resources\MovieResource\RelationManagers\CastRelationManager;
+use App\Filament\Resources\MovieResource\RelationManagers\CompaniesRelationManager;
+use App\Filament\Resources\MovieResource\RelationManagers\CrewRelationManager;
+use App\Filament\Resources\MovieResource\RelationManagers\GenresRelationManager;
+use App\Filament\Resources\MovieResource\RelationManagers\KeywordsRelationManager;
 use App\Models\Movie;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -31,8 +36,6 @@ class MovieResource extends Resource
                 Forms\Components\TextInput::make('poster')
                     ->required()
                     ->maxLength(255),
-                // Forms\Components\Toggle::make('adult')
-                //     ->required(),
                 Forms\Components\TextInput::make('budget')
                     ->required(),
                 Forms\Components\TextInput::make('revenue')
@@ -59,25 +62,13 @@ class MovieResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
-                // Tables\Columns\TextColumn::make('tagline'),
-                // Tables\Columns\TextColumn::make('description'),
-                // Tables\Columns\TextColumn::make('poster'),
-                // Tables\Columns\IconColumn::make('adult')
-                //     ->boolean()->sortable(),
                 Tables\Columns\TextColumn::make('budget'),
                 Tables\Columns\TextColumn::make('revenue'),
                 Tables\Columns\TextColumn::make('runtime'),
                 Tables\Columns\TextColumn::make('popularity'),
                 Tables\Columns\TextColumn::make('vote_average'),
                 Tables\Columns\TextColumn::make('vote_count'),
-                // Tables\Columns\TextColumn::make('imdb_id'),
-                // Tables\Columns\TextColumn::make('homepage'),
-                Tables\Columns\TextColumn::make('release_date')
-                    ->date(),
-                // Tables\Columns\TextColumn::make('created_at')
-                //     ->dateTime(),
-                // Tables\Columns\TextColumn::make('updated_at')
-                //     ->dateTime(),
+                Tables\Columns\TextColumn::make('release_date')->date(),
             ])
             ->filters([
 
@@ -94,7 +85,11 @@ class MovieResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CastRelationManager::class,
+            CrewRelationManager::class,
+            CompaniesRelationManager::class,
+            GenresRelationManager::class,
+            KeywordsRelationManager::class,
         ];
     }
 
@@ -106,5 +101,10 @@ class MovieResource extends Resource
             'edit' => Pages\EditMovie::route('/{record}/edit'),
             'view' => Pages\ViewMovie::route('/{record}'),
         ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [];
     }
 }
