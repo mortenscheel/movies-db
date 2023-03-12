@@ -9,11 +9,13 @@ use App\Filament\Resources\MovieResource\RelationManagers\CrewRelationManager;
 use App\Filament\Resources\MovieResource\RelationManagers\GenresRelationManager;
 use App\Filament\Resources\MovieResource\RelationManagers\KeywordsRelationManager;
 use App\Models\Movie;
+use DB;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Builder;
 
 class MovieResource extends Resource
 {
@@ -65,6 +67,9 @@ class MovieResource extends Resource
                 Tables\Columns\TextColumn::make('revenue')
                     ->formatStateUsing(fn ($column, $state) => $state ? number_format($state, 0, ',', '.') : '-')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('profit')
+                    ->formatStateUsing(fn ($column, $state) => $state ? number_format($state, 0, ',', '.') : '-')
+                    ->sortable(query: fn (Builder $query, $direction) => $query->orderBy(DB::raw('CAST(`revenue` AS SIGNED)-CAST(`budget` AS SIGNED)'), $direction)),
                 Tables\Columns\TextColumn::make('runtime')->sortable(),
                 Tables\Columns\TextColumn::make('popularity')->sortable(),
                 Tables\Columns\TextColumn::make('vote_average')->sortable(),

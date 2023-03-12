@@ -24,6 +24,7 @@ class MovieApiResource extends JsonResource
             'homepage',
             'budget',
             'revenue',
+            'profit',
             'popularity',
             'vote_average',
             'vote_count',

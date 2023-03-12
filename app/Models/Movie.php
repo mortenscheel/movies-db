@@ -21,6 +21,8 @@ class Movie extends Model
         'released_at' => 'date',
     ];
 
+    protected $appends = ['profit'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -52,6 +54,11 @@ class Movie extends Model
     public function crew(): BelongsToMany
     {
         return $this->belongsToMany(Person::class, 'crew')->withPivot(['job']);
+    }
+
+    public function profit(): Attribute
+    {
+        return Attribute::get(fn () => ($this->revenue ?? 0) - ($this->budget ?? 0));
     }
 
     public function runtime(): Attribute
