@@ -9,6 +9,7 @@ use App\Http\Requests\StoreMovieRequest;
 use App\Http\Requests\UpdateMovieRequest;
 use App\Http\Resources\MovieApiResource;
 use App\Models\Movie;
+use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -21,6 +22,11 @@ use Spatie\QueryBuilder\QueryBuilder;
 #[Group('Movies')]
 class MovieController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Movie::class);
+    }
+
     #[Endpoint('List movies')]
     #[ResponseFromApiResource(
         MovieApiResource::class,
@@ -49,7 +55,7 @@ class MovieController extends Controller
     public function store(StoreMovieRequest $request): MovieApiResource
     {
         return new MovieApiResource(Movie::create([
-            'user_id' => \Auth::id(),
+            'user_id' => Auth::id(),
             ...$request->validated(),
         ])->fresh());
     }
