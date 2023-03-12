@@ -11,3 +11,5 @@ This is a dummy project used to familiarize myself with FilamentPHP and Scribe d
 - Extract csv files to `storage/app/csv`
 - `php artisan prepare:csv`
 - `php artisan import:csv`
+- `npm install`
+- `npm run build/dev`
