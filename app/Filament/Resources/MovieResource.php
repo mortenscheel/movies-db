@@ -21,54 +21,54 @@ class MovieResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('tagline')
-                    ->maxLength(65535),
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->maxLength(65535),
-                Forms\Components\TextInput::make('poster')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('budget')
-                    ->required(),
-                Forms\Components\TextInput::make('revenue')
-                    ->required(),
-                Forms\Components\TextInput::make('runtime')
-                    ->required(),
-                Forms\Components\TextInput::make('popularity')
-                    ->required(),
-                Forms\Components\TextInput::make('vote_average')
-                    ->required(),
-                Forms\Components\TextInput::make('vote_count')
-                    ->required(),
-                Forms\Components\TextInput::make('imdb_id')
-                    ->required()
-                    ->maxLength(9),
-                Forms\Components\TextInput::make('homepage')
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('release_date'),
-            ]);
+            ->schema(
+                Forms\Components\Tabs::make('Movie')->tabs([
+                    Forms\Components\Tabs\Tab::make('Description')
+                        ->schema([
+                            Forms\Components\TextInput::make('title')->required()->maxLength(255),
+                            Forms\Components\TextInput::make('tagline')->maxLength(65535),
+                            Forms\Components\MarkdownEditor::make('description')->required()->maxLength(65535),
+                        ]),
+                    Forms\Components\Tabs\Tab::make('Metadata')
+                        ->schema([
+                            Forms\Components\Grid::make()
+                                ->schema([
+                                    Forms\Components\TextInput::make('poster')->required()->maxLength(255),
+                                    Forms\Components\TextInput::make('budget')->required(),
+                                    Forms\Components\TextInput::make('revenue')->required(),
+                                    Forms\Components\TextInput::make('runtime')->required(),
+                                    Forms\Components\TextInput::make('popularity')->required(),
+                                    Forms\Components\TextInput::make('vote_average')->required(),
+                                    Forms\Components\TextInput::make('vote_count')->required(),
+                                    Forms\Components\TextInput::make('imdb_id')->required()->maxLength(9),
+                                    Forms\Components\TextInput::make('homepage')->maxLength(255),
+                                    Forms\Components\DatePicker::make('release_date'),
+                                ]),
+                        ]),
+                ]));
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('budget'),
-                Tables\Columns\TextColumn::make('revenue'),
-                Tables\Columns\TextColumn::make('runtime'),
-                Tables\Columns\TextColumn::make('popularity'),
-                Tables\Columns\TextColumn::make('vote_average'),
-                Tables\Columns\TextColumn::make('vote_count'),
-                Tables\Columns\TextColumn::make('release_date')->date(),
+                Tables\Columns\TextColumn::make('title')->sortable(),
+                Tables\Columns\TextColumn::make('release_date')->date()->sortable(),
+                Tables\Columns\TextColumn::make('budget')
+                    ->formatStateUsing(fn ($column, $state) => $state ? number_format($state, 0, ',', '.') : '-')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('revenue')
+                    ->formatStateUsing(fn ($column, $state) => $state ? number_format($state, 0, ',', '.') : '-')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('runtime')->sortable(),
+                Tables\Columns\TextColumn::make('popularity')->sortable(),
+                Tables\Columns\TextColumn::make('vote_average')->sortable(),
+                Tables\Columns\TextColumn::make('vote_count')->sortable(),
             ])
             ->filters([
 
@@ -106,5 +106,10 @@ class MovieResource extends Resource
     public static function getWidgets(): array
     {
         return [];
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'tagline', 'description', 'keywords.name'];
     }
 }

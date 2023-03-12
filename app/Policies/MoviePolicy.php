@@ -36,7 +36,7 @@ class MoviePolicy
      */
     public function update(User $user, Movie $movie): bool
     {
-        return $user->id === $movie->id;
+        return $user->id === $movie->user_id;
     }
 
     /**
@@ -44,6 +44,6 @@ class MoviePolicy
      */
     public function delete(User $user, Movie $movie): bool
     {
-        return $user->id === $movie->id;
+        return $user->id === $movie->user_id;
     }
 }

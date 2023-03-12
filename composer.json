@@ -11,6 +11,7 @@
         "jeffgreco13/filament-breezy": "^1.5",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
+        "laravel/scout": "^10.0",
         "laravel/tinker": "^2.8",
         "league/csv": "^9.x-dev",
         "spatie/laravel-query-builder": "^5.2"
