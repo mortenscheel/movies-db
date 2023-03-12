@@ -3,6 +3,7 @@ This is a dummy project used to familiarize myself with FilamentPHP and Scribe d
 ## Installation
 
 - Clone this repo
+- `composer install`
 - `cp .env.example .env`
 - `php artisan key:generate`
 - Set up database connection
