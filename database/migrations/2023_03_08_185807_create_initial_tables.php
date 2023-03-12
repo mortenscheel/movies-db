@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('movies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->string('title')->index();
-            $table->text('tagline')->nullable();
-            $table->text('description');
+            $table->string('title')->fulltext();
+            $table->text('tagline')->nullable()->fulltext();
+            $table->text('description')->fulltext();
             $table->string('poster')->nullable();
             $table->unsignedInteger('budget');
             $table->unsignedInteger('revenue')->index();
@@ -51,7 +51,7 @@ return new class extends Migration
         });
         Schema::create('keywords', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->index();
+            $table->string('name')->fulltext();
             $table->timestamps();
         });
         Schema::create('keyword_movie', function (Blueprint $table) {
